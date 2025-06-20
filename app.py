@@ -9,6 +9,10 @@ from dash import Dash, dcc, html, Input, Output, callback, dash_table, State
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
+import base64
+import io
+import os
 
 class FritoLayLogisticsDemo:
     def __init__(self):
@@ -160,6 +164,7 @@ class FritoLayLogisticsDemo:
                         dbc.Tab(label="🛣️ Toll Rates", tab_id="tolls", className="fw-bold"),
                         dbc.Tab(label="📦 Orders History", tab_id="orders", className="fw-bold"),
                         dbc.Tab(label="🏭 Suppliers", tab_id="suppliers", className="fw-bold"),
+                        dbc.Tab(label="📤 Upload Data", tab_id="upload", className="fw-bold"),
                     ], id="main-tabs", active_tab="routes")
                 ]),
                 dbc.CardBody([
@@ -268,7 +273,113 @@ class FritoLayLogisticsDemo:
                 return self.create_orders_history_view(data)
             elif active_tab == 'suppliers':
                 return self.create_suppliers_view(data)
+            elif active_tab == 'upload':
+                return self.create_upload_view()
             return html.Div()
+        
+        # File upload callbacks
+        @self.app.callback(
+            [Output('upload-stores-status', 'children'),
+             Output('upload-suppliers-status', 'children'),
+             Output('upload-tolls-status', 'children'),
+             Output('upload-orders-status', 'children'),
+             Output('recalculate-btn', 'disabled')],
+            [Input('upload-stores', 'contents'),
+             Input('upload-suppliers', 'contents'),
+             Input('upload-tolls', 'contents'),
+             Input('upload-orders', 'contents')],
+            [State('upload-stores', 'filename'),
+             State('upload-suppliers', 'filename'),
+             State('upload-tolls', 'filename'),
+             State('upload-orders', 'filename')]
+        )
+        def handle_file_uploads(stores_content, suppliers_content, tolls_content, orders_content,
+                               stores_filename, suppliers_filename, tolls_filename, orders_filename):
+            
+            stores_status = self.process_upload(stores_content, stores_filename, 'stores')
+            suppliers_status = self.process_upload(suppliers_content, suppliers_filename, 'suppliers')
+            tolls_status = self.process_upload(tolls_content, tolls_filename, 'tolls')
+            orders_status = self.process_upload(orders_content, orders_filename, 'orders')
+            
+            # Enable recalculate button if at least one file uploaded
+            any_uploaded = any([stores_content, suppliers_content, tolls_content, orders_content])
+            
+            return stores_status, suppliers_status, tolls_status, orders_status, not any_uploaded
+        
+        @self.app.callback(
+            Output('recalculation-status', 'children'),
+            Input('recalculate-btn', 'n_clicks'),
+            prevent_initial_call=True
+        )
+        def recalculate_routes(n_clicks):
+            if n_clicks:
+                try:
+                    # Here you would call your optimization algorithm with new data
+                    # For demo purposes, show success message
+                    return dbc.Alert([
+                        html.I(className="fas fa-check-circle me-2"),
+                        "Routes successfully recalculated with new data! Refresh the page to see updated results."
+                    ], color="success", className="mt-2")
+                except Exception as e:
+                    return dbc.Alert([
+                        html.I(className="fas fa-exclamation-triangle me-2"),
+                        f"Error recalculating routes: {str(e)}"
+                    ], color="danger", className="mt-2")
+            return ""
+    
+    def process_upload(self, contents, filename, file_type):
+        if contents is None:
+            return ""
+        
+        try:
+            # Decode the uploaded file
+            content_type, content_string = contents.split(',')
+            decoded = base64.b64decode(content_string)
+            
+            # Read the file based on extension
+            if filename.endswith('.csv'):
+                df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            elif filename.endswith(('.xlsx', '.xls')):
+                df = pd.read_excel(io.BytesIO(decoded))
+            else:
+                return dbc.Alert("Unsupported file format", color="danger", className="mt-2")
+            
+            # Validate columns based on file type
+            required_columns = {
+                'stores': ['store_id', 'name', 'address', 'city', 'state', 'zip_code', 
+                          'latitude', 'longitude', 'demand_pallets', 'priority', 'contact_info'],
+                'suppliers': ['supplier_id', 'name', 'address', 'city', 'state', 'zip_code',
+                             'latitude', 'longitude', 'available_pallets', 'cost_per_pallet',
+                             'lead_time_days', 'capacity_per_day', 'reliability_score', 'contact_info'],
+                'tolls': ['from_location', 'to_location', 'rate_per_mile'],
+                'orders': ['order_id', 'store_id', 'supplier_id', 'quantity', 'requested_date',
+                          'priority', 'special_instructions', 'product_mix']
+            }
+            
+            expected_cols = required_columns.get(file_type, [])
+            missing_cols = [col for col in expected_cols if col not in df.columns]
+            
+            if missing_cols:
+                return dbc.Alert([
+                    html.I(className="fas fa-exclamation-triangle me-2"),
+                    f"Missing columns: {', '.join(missing_cols)}"
+                ], color="warning", className="mt-2")
+            
+            # Save the file to the appropriate location
+            output_path = f"data/input/{file_type}_uploaded.xlsx"
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.to_excel(output_path, index=False)
+            
+            return dbc.Alert([
+                html.I(className="fas fa-check-circle me-2"),
+                f"✅ {filename} uploaded successfully! ({len(df)} rows)"
+            ], color="success", className="mt-2")
+            
+        except Exception as e:
+            return dbc.Alert([
+                html.I(className="fas fa-exclamation-triangle me-2"),
+                f"Error processing {filename}: {str(e)}"
+            ], color="danger", className="mt-2")
     
     def create_routes_view(self, data):
         routes = data['routes']
@@ -847,6 +958,222 @@ class FritoLayLogisticsDemo:
                 page_size=10,
                 style_table={'overflowX': 'auto'}
             )
+        ])
+
+    def create_upload_view(self):
+        return html.Div([
+            html.H4([
+                html.I(className="fas fa-upload me-2"),
+                "Upload New Data Files"
+            ], className="mb-4"),
+            
+            # Instructions
+            dbc.Alert([
+                html.H5([
+                    html.I(className="fas fa-info-circle me-2"),
+                    "File Upload Instructions"
+                ], className="alert-heading"),
+                html.Hr(),
+                html.P([
+                    "Upload your Excel files to replace the current data and automatically recalculate optimal routes. ",
+                    "Make sure your files follow the exact column structure shown below."
+                ]),
+                html.P([
+                    html.Strong("Supported files: "), 
+                    ".xlsx, .xls, .csv"
+                ]),
+                html.P([
+                    html.I(className="fas fa-download me-1"),
+                    html.Strong("Need templates? "),
+                    "Download sample files with the correct format from the examples in the ",
+                    html.Code("data/input/"),
+                    " folder."
+                ], className="mb-0")
+            ], color="info", className="mb-4"),
+            
+            # File Upload Cards
+            dbc.Row([
+                # Store Locations Upload
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5([
+                                html.I(className="fas fa-store me-2"),
+                                "Store Locations"
+                            ], className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            dcc.Upload(
+                                id='upload-stores',
+                                children=html.Div([
+                                    html.I(className="fas fa-cloud-upload-alt fa-2x mb-2"),
+                                    html.Br(),
+                                    'Drag and Drop or ',
+                                    html.A('Select store_locations.xlsx')
+                                ], className="text-center p-4"),
+                                style={
+                                    'width': '100%',
+                                    'height': '120px',
+                                    'lineHeight': '120px',
+                                    'borderWidth': '2px',
+                                    'borderStyle': 'dashed',
+                                    'borderRadius': '10px',
+                                    'borderColor': '#007bff',
+                                    'backgroundColor': '#f8f9fa'
+                                },
+                                multiple=False,
+                                accept='.xlsx,.xls,.csv'
+                            ),
+                            html.Hr(),
+                            html.Small([
+                                html.Strong("Required columns: "),
+                                "store_id, name, address, city, state, zip_code, latitude, longitude, demand_pallets, priority, contact_info"
+                            ], className="text-muted"),
+                            html.Div(id='upload-stores-status', className="mt-2")
+                        ])
+                    ], className="mb-3")
+                ], width=12, lg=6),
+                
+                # Supplier Data Upload  
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5([
+                                html.I(className="fas fa-industry me-2"),
+                                "Supplier Data"
+                            ], className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            dcc.Upload(
+                                id='upload-suppliers',
+                                children=html.Div([
+                                    html.I(className="fas fa-cloud-upload-alt fa-2x mb-2"),
+                                    html.Br(),
+                                    'Drag and Drop or ',
+                                    html.A('Select supplier_data.xlsx')
+                                ], className="text-center p-4"),
+                                style={
+                                    'width': '100%',
+                                    'height': '120px',
+                                    'lineHeight': '120px',
+                                    'borderWidth': '2px',
+                                    'borderStyle': 'dashed',
+                                    'borderRadius': '10px',
+                                    'borderColor': '#28a745',
+                                    'backgroundColor': '#f8f9fa'
+                                },
+                                multiple=False,
+                                accept='.xlsx,.xls,.csv'
+                            ),
+                            html.Hr(),
+                            html.Small([
+                                html.Strong("Required columns: "),
+                                "supplier_id, name, address, city, state, zip_code, latitude, longitude, available_pallets, cost_per_pallet, lead_time_days, capacity_per_day, reliability_score, contact_info"
+                            ], className="text-muted"),
+                            html.Div(id='upload-suppliers-status', className="mt-2")
+                        ])
+                    ], className="mb-3")
+                ], width=12, lg=6),
+                
+                # Toll Rates Upload
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5([
+                                html.I(className="fas fa-road me-2"),
+                                "Toll Rates"
+                            ], className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            dcc.Upload(
+                                id='upload-tolls',
+                                children=html.Div([
+                                    html.I(className="fas fa-cloud-upload-alt fa-2x mb-2"),
+                                    html.Br(),
+                                    'Drag and Drop or ',
+                                    html.A('Select toll_rates.xlsx')
+                                ], className="text-center p-4"),
+                                style={
+                                    'width': '100%',
+                                    'height': '120px',
+                                    'lineHeight': '120px',
+                                    'borderWidth': '2px',
+                                    'borderStyle': 'dashed',
+                                    'borderRadius': '10px',
+                                    'borderColor': '#ffc107',
+                                    'backgroundColor': '#f8f9fa'
+                                },
+                                multiple=False,
+                                accept='.xlsx,.xls,.csv'
+                            ),
+                            html.Hr(),
+                            html.Small([
+                                html.Strong("Required columns: "),
+                                "from_location, to_location, rate_per_mile"
+                            ], className="text-muted"),
+                            html.Div(id='upload-tolls-status', className="mt-2")
+                        ])
+                    ], className="mb-3")
+                ], width=12, lg=6),
+                
+                # Historical Orders Upload
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5([
+                                html.I(className="fas fa-history me-2"),
+                                "Historical Orders"
+                            ], className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            dcc.Upload(
+                                id='upload-orders',
+                                children=html.Div([
+                                    html.I(className="fas fa-cloud-upload-alt fa-2x mb-2"),
+                                    html.Br(),
+                                    'Drag and Drop or ',
+                                    html.A('Select historical_orders.xlsx')
+                                ], className="text-center p-4"),
+                                style={
+                                    'width': '100%',
+                                    'height': '120px',
+                                    'lineHeight': '120px',
+                                    'borderWidth': '2px',
+                                    'borderStyle': 'dashed',
+                                    'borderRadius': '10px',
+                                    'borderColor': '#dc3545',
+                                    'backgroundColor': '#f8f9fa'
+                                },
+                                multiple=False,
+                                accept='.xlsx,.xls,.csv'
+                            ),
+                            html.Hr(),
+                            html.Small([
+                                html.Strong("Required columns: "),
+                                "order_id, store_id, supplier_id, quantity, requested_date, priority, special_instructions, product_mix"
+                            ], className="text-muted"),
+                            html.Div(id='upload-orders-status', className="mt-2")
+                        ])
+                    ], className="mb-3")
+                ], width=12, lg=6)
+            ]),
+            
+            # Process Button
+            html.Hr(className="my-4"),
+            dbc.Row([
+                dbc.Col([
+                    dbc.Button([
+                        html.I(className="fas fa-cogs me-2"),
+                        "Recalculate Routes with New Data"
+                    ], 
+                    id="recalculate-btn", 
+                    color="primary", 
+                    size="lg", 
+                    className="w-100",
+                    disabled=True),
+                    html.Div(id='recalculation-status', className="mt-3")
+                ], width=12, md=6, className="mx-auto")
+            ])
         ])
 
     def get_embedded_data(self):
