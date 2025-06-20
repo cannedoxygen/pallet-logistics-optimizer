@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-🍟 Frito-Lay Pallet Logistics Optimizer - Vercel Demo
-Ultra-lightweight version with embedded data for Vercel deployment
+Frito-Lay Pallet Logistics Optimizer - Complete Demo
+Professional route optimization and cost analysis dashboard
 Made by Lyndsey Gledhill
 """
 
@@ -12,16 +12,17 @@ import plotly.graph_objects as go
 
 class FritoLayLogisticsDemo:
     def __init__(self):
-        self.app = Dash(__name__, external_stylesheets=[
-            dbc.themes.BOOTSTRAP,
-            "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        ])
-        self.app.title = "🍟 Frito-Lay Logistics Optimizer - Demo"
+        self.app = Dash(__name__, 
+                       external_stylesheets=[
+                           dbc.themes.BOOTSTRAP,
+                           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+                       ])
+        self.app.title = "Frito-Lay Logistics Optimizer - Demo"
         self.setup_layout()
         self.setup_callbacks()
         
     def setup_layout(self):
-        # Mobile responsive viewport
+        # Mobile responsive viewport with custom CSS
         self.app.index_string = '''
         <!DOCTYPE html>
         <html>
@@ -31,6 +32,41 @@ class FritoLayLogisticsDemo:
                 <title>{%title%}</title>
                 {%favicon%}
                 {%css%}
+                <style>
+                .custom-header {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                    border-bottom: 4px solid #FFD700;
+                }
+                .metrics-card {
+                    transition: all 0.3s ease;
+                    border: none !important;
+                }
+                .metrics-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+                }
+                .route-card {
+                    transition: all 0.2s ease;
+                    border-left: 4px solid #007bff;
+                }
+                .route-card:hover {
+                    transform: translateX(5px);
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                }
+                .efficiency-high { border-left-color: #28a745 !important; }
+                .efficiency-medium { border-left-color: #ffc107 !important; }
+                .efficiency-low { border-left-color: #dc3545 !important; }
+                .bg-gradient-primary {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                }
+                .animate-fade-in {
+                    animation: fadeIn 0.6s ease-in;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                </style>
             </head>
             <body>
                 {%app_entry%}
@@ -46,7 +82,7 @@ class FritoLayLogisticsDemo:
         self.app.layout = dbc.Container([
             dcc.Store(id='demo-store', data=self.get_embedded_data()),
             
-            # 🍟 Professional Header - Mobile Responsive
+            # Professional Header - Mobile Responsive
             dbc.Row([
                 dbc.Col([
                     html.Div([
@@ -55,7 +91,7 @@ class FritoLayLogisticsDemo:
                                 html.Div([
                                     html.H1([
                                         html.I(className="fas fa-truck me-2", style={'color': '#FFD700'}),
-                                        html.Span("🍟 Frito-Lay", className="d-none d-md-inline"),
+                                        html.Span("Frito-Lay", className="d-none d-md-inline"),
                                         html.Span("Logistics Optimizer", className="d-block d-md-inline")
                                     ], className="h3 h1-md text-white font-weight-bold mb-2"),
                                     html.P([
@@ -87,45 +123,43 @@ class FritoLayLogisticsDemo:
                         ])
                     ], className="py-3 py-md-4 px-3 px-md-4")
                 ])
-            ], className="bg-gradient-primary shadow-lg mb-4", style={
-                'background': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'borderBottom': '4px solid #FFD700'
-            }),
+            ], className="custom-header shadow-lg mb-4"),
             
-            # 🚨 Demo Notice
+            # Demo Notice
             dbc.Row([
                 dbc.Col([
                     dbc.Alert([
                         html.H4([
                             html.I(className="fas fa-info-circle me-2"),
-                            "🍟 Live Frito-Lay Logistics Demo"
+                            "Live Frito-Lay Logistics Demo"
                         ], className="alert-heading"),
                         html.Hr(),
                         html.P([
                             "This is a live demonstration of the Pallet Logistics Optimizer using realistic Frito-Lay data. ",
-                            "The system shows optimized delivery routes for ", html.Strong("16 retail locations"), 
-                            " across 6 states, served by ", html.Strong("6 distribution centers"), 
-                            " with snack product deliveries totaling ", html.Strong("$8,450 in optimized costs"), "."
+                            "The system shows optimized delivery routes for ", html.Strong("9 retail locations"), 
+                            " across 6 states, with snack product deliveries totaling ", html.Strong("$8,450 in optimized costs"), "."
                         ]),
                         html.P([
                             html.I(className="fas fa-chart-bar me-1"),
                             "Explore the tabs below to see route analysis, cost breakdowns, and interactive visualizations."
                         ], className="mb-0 text-primary fw-bold")
-                    ], color="info", className="mb-4")
+                    ], color="info", className="mb-4 animate-fade-in")
                 ])
             ]),
             
-            # 📊 Key Metrics Dashboard
+            # Metrics
             html.Div(id="metrics-dashboard", className="mb-4"),
             
-            # 📋 Interactive Results Tabs
+            # Results Tabs
             dbc.Card([
                 dbc.CardHeader([
                     dbc.Tabs([
                         dbc.Tab(label="🚛 Route Overview", tab_id="routes", className="fw-bold"),
                         dbc.Tab(label="💰 Cost Analytics", tab_id="costs", className="fw-bold"),
                         dbc.Tab(label="🏪 Store Network", tab_id="stores", className="fw-bold"),
-                        dbc.Tab(label="📍 Geographic Map", tab_id="map", className="fw-bold"),
+                        dbc.Tab(label="🛣️ Toll Rates", tab_id="tolls", className="fw-bold"),
+                        dbc.Tab(label="📦 Orders History", tab_id="orders", className="fw-bold"),
+                        dbc.Tab(label="🏭 Suppliers", tab_id="suppliers", className="fw-bold"),
                     ], id="main-tabs", active_tab="routes")
                 ]),
                 dbc.CardBody([
@@ -154,7 +188,7 @@ class FritoLayLogisticsDemo:
                                 "15% optimized"
                             ], className="text-success")
                         ], className="text-center py-2")
-                    ], className="shadow-sm border-0 h-100")
+                    ], className="metrics-card shadow-sm border-0 h-100")
                 ], width=6, lg=True, className="mb-2 mb-lg-0"),
                 
                 dbc.Col([
@@ -168,7 +202,7 @@ class FritoLayLogisticsDemo:
                                 f"{len(data['routes'])} routes"
                             ], className="text-info")
                         ], className="text-center py-2")
-                    ], className="shadow-sm border-0 h-100")
+                    ], className="metrics-card shadow-sm border-0 h-100")
                 ], width=6, lg=True, className="mb-2 mb-lg-0"),
                 
                 dbc.Col([
@@ -182,7 +216,7 @@ class FritoLayLogisticsDemo:
                                 "Delivery time"
                             ], className="text-warning")
                         ], className="text-center py-2")
-                    ], className="shadow-sm border-0 h-100")
+                    ], className="metrics-card shadow-sm border-0 h-100")
                 ], width=6, lg=True, className="mb-2 mb-lg-0"),
                 
                 dbc.Col([
@@ -196,7 +230,7 @@ class FritoLayLogisticsDemo:
                                 "Delivered"
                             ], className="text-success")
                         ], className="text-center py-2")
-                    ], className="shadow-sm border-0 h-100")
+                    ], className="metrics-card shadow-sm border-0 h-100")
                 ], width=6, lg=True, className="mb-2 mb-lg-0"),
                 
                 dbc.Col([
@@ -210,7 +244,7 @@ class FritoLayLogisticsDemo:
                                 "Fleet utilization"
                             ], className="text-danger")
                         ], className="text-center py-2")
-                    ], className="shadow-sm border-0 h-100")
+                    ], className="metrics-card shadow-sm border-0 h-100")
                 ], width=6, lg=True, className="mb-2 mb-lg-0"),
             ], className="g-2 g-lg-3")
             
@@ -228,8 +262,12 @@ class FritoLayLogisticsDemo:
                 return self.create_cost_analysis(data)
             elif active_tab == 'stores':
                 return self.create_stores_view(data)
-            elif active_tab == 'map':
-                return self.create_geographic_view(data)
+            elif active_tab == 'tolls':
+                return self.create_toll_rates_view(data)
+            elif active_tab == 'orders':
+                return self.create_orders_history_view(data)
+            elif active_tab == 'suppliers':
+                return self.create_suppliers_view(data)
             return html.Div()
     
     def create_routes_view(self, data):
@@ -237,8 +275,17 @@ class FritoLayLogisticsDemo:
         
         route_cards = []
         for i, route in enumerate(routes, 1):
-            # Route status badge
-            status_color = "success" if route['efficiency'] > 0.8 else "warning" if route['efficiency'] > 0.6 else "danger"
+            # Determine efficiency class for styling
+            efficiency = route.get('efficiency', 0.7)
+            if efficiency > 0.8:
+                efficiency_class = "efficiency-high"
+                efficiency_color = "success"
+            elif efficiency > 0.6:
+                efficiency_class = "efficiency-medium"  
+                efficiency_color = "warning"
+            else:
+                efficiency_class = "efficiency-low"
+                efficiency_color = "danger"
             
             card = dbc.Card([
                 dbc.CardHeader([
@@ -250,8 +297,8 @@ class FritoLayLogisticsDemo:
                             ], className="mb-0 text-primary")
                         ], width=12, md=8),
                         dbc.Col([
-                            dbc.Badge(f"{route['efficiency']:.0%} Efficient", 
-                                    color=status_color, className="float-end")
+                            dbc.Badge(f"{efficiency:.0%} Efficient", 
+                                    color=efficiency_color, className="float-end")
                         ], width=12, md=4, className="text-end mt-2 mt-md-0")
                     ])
                 ]),
@@ -270,9 +317,9 @@ class FritoLayLogisticsDemo:
                                     color="primary", className="me-2 mb-1"),
                             dbc.Badge(f"💰 ${route['cost']:,}", 
                                     color="success", className="me-2 mb-1"),
-                            dbc.Badge(f"📏 {route['distance']} mi", 
+                            dbc.Badge(f"📏 {route.get('distance', 400)} mi", 
                                     color="info", className="me-2 mb-1"),
-                            dbc.Badge(f"⏱️ {route['time']} hrs", 
+                            dbc.Badge(f"⏱️ {route.get('time', 6)} hrs", 
                                     color="warning", className="mb-1")
                         ], width=12)
                     ]),
@@ -284,7 +331,7 @@ class FritoLayLogisticsDemo:
                         dbc.Col([
                             html.Small([
                                 html.I(className="fas fa-tachometer-alt me-1 text-muted"),
-                                f"Avg Speed: {route['distance']/route['time']:.1f} mph"
+                                f"Avg Speed: {route.get('distance', 400)/route.get('time', 6):.1f} mph"
                             ], className="text-muted")
                         ], width=12, sm=6),
                         dbc.Col([
@@ -295,7 +342,7 @@ class FritoLayLogisticsDemo:
                         ], width=12, sm=6)
                     ])
                 ])
-            ], className="mb-3 shadow-sm border-0")
+            ], className=f"route-card {efficiency_class} mb-3 shadow-sm border-0")
             route_cards.append(card)
         
         return html.Div([
@@ -307,13 +354,12 @@ class FritoLayLogisticsDemo:
         ])
     
     def create_cost_analysis(self, data):
-        # Cost breakdown pie chart
         cost_data = data['cost_breakdown']
         
         pie_fig = px.pie(
             values=list(cost_data.values()), 
             names=list(cost_data.keys()),
-            title="💰 Cost Breakdown Analysis",
+            title="Cost Breakdown Analysis",
             color_discrete_sequence=['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57']
         )
         pie_fig.update_layout(
@@ -325,12 +371,12 @@ class FritoLayLogisticsDemo:
         # Route efficiency comparison
         routes = data['routes']
         route_names = [f"Route {i+1}" for i in range(len(routes))]
-        efficiency_scores = [r['efficiency'] * 100 for r in routes]
+        efficiency_scores = [route.get('efficiency', 0.7) * 100 for route in routes]
         
         bar_fig = px.bar(
             x=route_names, 
             y=efficiency_scores,
-            title="📊 Route Efficiency Comparison",
+            title="Route Efficiency Comparison",
             labels={'x': 'Route', 'y': 'Efficiency (%)'},
             color=efficiency_scores,
             color_continuous_scale="RdYlGn"
@@ -357,7 +403,7 @@ class FritoLayLogisticsDemo:
             
             # Cost summary cards
             html.Hr(className="my-4"),
-            html.H5("💸 Cost Summary", className="mb-3"),
+            html.H5("Cost Summary", className="mb-3"),
             dbc.Row([
                 dbc.Col([
                     dbc.Card([
@@ -368,7 +414,7 @@ class FritoLayLogisticsDemo:
                             html.P(f"{cost_data['Vehicle Operations']/sum(cost_data.values()):.1%} of total", 
                                   className="text-muted small mb-0")
                         ])
-                    ], className="text-center")
+                    ], className="text-center metrics-card")
                 ], width=12, md=4, className="mb-3"),
                 dbc.Col([
                     dbc.Card([
@@ -379,7 +425,7 @@ class FritoLayLogisticsDemo:
                             html.P(f"{cost_data['Fuel Costs']/sum(cost_data.values()):.1%} of total", 
                                   className="text-muted small mb-0")
                         ])
-                    ], className="text-center")
+                    ], className="text-center metrics-card")
                 ], width=12, md=4, className="mb-3"),
                 dbc.Col([
                     dbc.Card([
@@ -390,7 +436,7 @@ class FritoLayLogisticsDemo:
                             html.P(f"{cost_data['Labor Costs']/sum(cost_data.values()):.1%} of total", 
                                   className="text-muted small mb-0")
                         ])
-                    ], className="text-center")
+                    ], className="text-center metrics-card")
                 ], width=12, md=4, className="mb-3")
             ])
         ])
@@ -412,7 +458,7 @@ class FritoLayLogisticsDemo:
                             html.H5(f"{len(stores)}", className="text-primary mb-1"),
                             html.P("Total Stores", className="mb-0")
                         ], className="text-center")
-                    ])
+                    ], className="metrics-card")
                 ], width=6, md=3, className="mb-3"),
                 dbc.Col([
                     dbc.Card([
@@ -420,7 +466,7 @@ class FritoLayLogisticsDemo:
                             html.H5(f"{len(set(s['state'] for s in stores))}", className="text-info mb-1"),
                             html.P("States", className="mb-0")
                         ], className="text-center")
-                    ])
+                    ], className="metrics-card")
                 ], width=6, md=3, className="mb-3"),
                 dbc.Col([
                     dbc.Card([
@@ -428,7 +474,7 @@ class FritoLayLogisticsDemo:
                             html.H5(f"{sum(s['pallets'] for s in stores)}", className="text-success mb-1"),
                             html.P("Total Pallets", className="mb-0")
                         ], className="text-center")
-                    ])
+                    ], className="metrics-card")
                 ], width=6, md=3, className="mb-3"),
                 dbc.Col([
                     dbc.Card([
@@ -436,7 +482,7 @@ class FritoLayLogisticsDemo:
                             html.H5(f"{sum(s['pallets'] for s in stores)/len(stores):.1f}", className="text-warning mb-1"),
                             html.P("Avg per Store", className="mb-0")
                         ], className="text-center")
-                    ])
+                    ], className="metrics-card")
                 ], width=6, md=3, className="mb-3")
             ]),
             
@@ -449,8 +495,103 @@ class FritoLayLogisticsDemo:
                     {'name': '🏪 Store Name', 'id': 'name'},
                     {'name': '📍 City', 'id': 'city'},
                     {'name': '🗺️ State', 'id': 'state'},
-                    {'name': '📦 Pallets', 'id': 'pallets', 'type': 'numeric'},
-                    {'name': '⭐ Priority', 'id': 'priority'}
+                    {'name': '📦 Pallets', 'id': 'pallets', 'type': 'numeric'}
+                ],
+                style_cell={
+                    'textAlign': 'left', 
+                    'fontFamily': 'Arial', 
+                    'fontSize': '14px',
+                    'padding': '12px'
+                },
+                style_header={
+                    'backgroundColor': '#f8f9fa', 
+                    'fontWeight': 'bold',
+                    'border': '1px solid #dee2e6'
+                },
+                style_data={
+                    'border': '1px solid #dee2e6'
+                },
+                style_data_conditional=[
+                    {
+                        'if': {'row_index': 'odd'},
+                        'backgroundColor': 'rgb(248, 249, 250)'
+                    }
+                ],
+                sort_action="native",
+                page_size=10,
+                style_table={'overflowX': 'auto'}
+            )
+        ])
+    
+    def create_toll_rates_view(self, data):
+        toll_rates = [
+            {'from_location': 'Chicago', 'to_location': 'Milwaukee', 'rate_per_mile': 0.15},
+            {'from_location': 'Indianapolis', 'to_location': 'Chicago', 'rate_per_mile': 0.12},
+            {'from_location': 'Columbus', 'to_location': 'Indianapolis', 'rate_per_mile': 0.14},
+            {'from_location': 'Detroit', 'to_location': 'Chicago', 'rate_per_mile': 0.18},
+            {'from_location': 'St. Louis', 'to_location': 'Chicago', 'rate_per_mile': 0.10},
+            {'from_location': 'Milwaukee', 'to_location': 'Detroit', 'rate_per_mile': 0.16},
+            {'from_location': 'Cincinnati', 'to_location': 'Columbus', 'rate_per_mile': 0.13},
+            {'from_location': 'Dallas', 'to_location': 'Austin', 'rate_per_mile': 0.11}
+        ]
+        
+        avg_rate = sum(rate['rate_per_mile'] for rate in toll_rates) / len(toll_rates)
+        max_rate = max(toll_rates, key=lambda x: x['rate_per_mile'])
+        min_rate = min(toll_rates, key=lambda x: x['rate_per_mile'])
+        
+        return html.Div([
+            html.H4([
+                html.I(className="fas fa-road me-2"),
+                "Toll Rates Analysis"
+            ], className="mb-4"),
+            
+            # Summary metrics
+            dbc.Row([
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"${avg_rate:.3f}", className="text-primary mb-1"),
+                            html.P("Average Rate/Mile", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"${max_rate['rate_per_mile']:.3f}", className="text-danger mb-1"),
+                            html.P("Highest Rate", className="mb-0"),
+                            html.Small(f"{max_rate['from_location']} → {max_rate['to_location']}", className="text-muted")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"${min_rate['rate_per_mile']:.3f}", className="text-success mb-1"),
+                            html.P("Lowest Rate", className="mb-0"),
+                            html.Small(f"{min_rate['from_location']} → {min_rate['to_location']}", className="text-muted")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"{len(toll_rates)}", className="text-info mb-1"),
+                            html.P("Total Routes", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3")
+            ]),
+            
+            html.Hr(className="my-4"),
+            
+            # Toll rates table
+            dash_table.DataTable(
+                data=toll_rates,
+                columns=[
+                    {'name': '📍 From Location', 'id': 'from_location'},
+                    {'name': '📍 To Location', 'id': 'to_location'},
+                    {'name': '💰 Rate per Mile', 'id': 'rate_per_mile', 'type': 'numeric', 'format': {'specifier': '$.3f'}}
                 ],
                 style_cell={
                     'textAlign': 'left', 
@@ -472,9 +613,124 @@ class FritoLayLogisticsDemo:
                         'backgroundColor': 'rgb(248, 249, 250)'
                     },
                     {
+                        'if': {'filter_query': '{rate_per_mile} > 0.15'},
+                        'backgroundColor': '#f8d7da',
+                        'color': 'black'
+                    },
+                    {
+                        'if': {'filter_query': '{rate_per_mile} < 0.12'},
+                        'backgroundColor': '#d1eddf',
+                        'color': 'black'
+                    }
+                ],
+                sort_action="native",
+                style_table={'overflowX': 'auto'}
+            )
+        ])
+    
+    def create_orders_history_view(self, data):
+        orders = [
+            {'order_id': 'FL_2024_001', 'store_id': 'WM_CHI_001', 'quantity': 45, 'priority': 'High', 'product_mix': 'Cheetos Crunchy, Lay\'s Classic'},
+            {'order_id': 'FL_2024_002', 'store_id': 'TG_MIL_002', 'quantity': 32, 'priority': 'Medium', 'product_mix': 'Ruffles Original, Smartfood Popcorn'},
+            {'order_id': 'FL_2024_003', 'store_id': 'KR_DET_003', 'quantity': 58, 'priority': 'High', 'product_mix': 'Cheetos Crunchy, Fritos Original'},
+            {'order_id': 'FL_2024_004', 'store_id': 'MJ_CIN_004', 'quantity': 28, 'priority': 'Low', 'product_mix': 'Fritos Original, Smartfood Popcorn'},
+            {'order_id': 'FL_2024_005', 'store_id': 'WM_COL_005', 'quantity': 41, 'priority': 'Medium', 'product_mix': 'Doritos Nacho Cheese, Lay\'s Classic'},
+            {'order_id': 'FL_2024_006', 'store_id': 'CS_DAL_006', 'quantity': 67, 'priority': 'High', 'product_mix': 'Cheetos Flamin\' Hot, Lay\'s BBQ'},
+            {'order_id': 'FL_2024_007', 'store_id': 'TG_AUS_007', 'quantity': 39, 'priority': 'Medium', 'product_mix': 'Fritos Scoops, Ruffles Cheddar'},
+            {'order_id': 'FL_2024_008', 'store_id': 'WM_HOU_008', 'quantity': 52, 'priority': 'High', 'product_mix': 'Doritos Cool Ranch, Cheetos Puffs'}
+        ]
+        
+        total_quantity = sum(order['quantity'] for order in orders)
+        high_priority = len([o for o in orders if o['priority'] == 'High'])
+        avg_order_size = total_quantity / len(orders)
+        
+        return html.Div([
+            html.H4([
+                html.I(className="fas fa-history me-2"),
+                "Orders History Dashboard"
+            ], className="mb-4"),
+            
+            # Order statistics
+            dbc.Row([
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"{len(orders)}", className="text-primary mb-1"),
+                            html.P("Total Orders", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"{total_quantity}", className="text-success mb-1"),
+                            html.P("Total Quantity", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"{high_priority}", className="text-danger mb-1"),
+                            html.P("High Priority", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"{avg_order_size:.1f}", className="text-info mb-1"),
+                            html.P("Avg Order Size", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3")
+            ]),
+            
+            html.Hr(className="my-4"),
+            
+            # Orders table
+            dash_table.DataTable(
+                data=orders,
+                columns=[
+                    {'name': '📋 Order ID', 'id': 'order_id'},
+                    {'name': '🏪 Store ID', 'id': 'store_id'},
+                    {'name': '📦 Quantity', 'id': 'quantity', 'type': 'numeric'},
+                    {'name': '🚨 Priority', 'id': 'priority'},
+                    {'name': 'Product Mix', 'id': 'product_mix'}
+                ],
+                style_cell={
+                    'textAlign': 'left', 
+                    'fontFamily': 'Arial', 
+                    'fontSize': '14px',
+                    'padding': '12px',
+                    'maxWidth': '200px',
+                    'overflow': 'hidden',
+                    'textOverflow': 'ellipsis'
+                },
+                style_header={
+                    'backgroundColor': '#f8f9fa', 
+                    'fontWeight': 'bold',
+                    'border': '1px solid #dee2e6'
+                },
+                style_data={
+                    'border': '1px solid #dee2e6',
+                    'whiteSpace': 'normal',
+                    'height': 'auto'
+                },
+                style_data_conditional=[
+                    {
+                        'if': {'row_index': 'odd'},
+                        'backgroundColor': 'rgb(248, 249, 250)'
+                    },
+                    {
                         'if': {'filter_query': '{priority} = High'},
                         'backgroundColor': '#f8d7da',
-                        'color': 'black',
+                        'color': 'black'
+                    },
+                    {
+                        'if': {'filter_query': '{priority} = Low'},
+                        'backgroundColor': '#d1eddf',
+                        'color': 'black'
                     }
                 ],
                 sort_action="native",
@@ -483,89 +739,117 @@ class FritoLayLogisticsDemo:
             )
         ])
     
-    def create_geographic_view(self, data):
-        stores = data['stores']
+    def create_suppliers_view(self, data):
+        suppliers = [
+            {'name': 'Frito-Lay Chicago Distribution Center', 'city': 'Chicago', 'state': 'IL', 'available_pallets': 250, 'cost_per_pallet': 85, 'reliability_score': 98},
+            {'name': 'Frito-Lay Indianapolis Hub', 'city': 'Indianapolis', 'state': 'IN', 'available_pallets': 180, 'cost_per_pallet': 82, 'reliability_score': 95},
+            {'name': 'Frito-Lay Milwaukee Center', 'city': 'Milwaukee', 'state': 'WI', 'available_pallets': 120, 'cost_per_pallet': 87, 'reliability_score': 92},
+            {'name': 'Frito-Lay St. Louis Facility', 'city': 'St. Louis', 'state': 'MO', 'available_pallets': 200, 'cost_per_pallet': 80, 'reliability_score': 96},
+            {'name': 'Frito-Lay Columbus Distribution', 'city': 'Columbus', 'state': 'OH', 'available_pallets': 160, 'cost_per_pallet': 83, 'reliability_score': 94},
+            {'name': 'Frito-Lay Dallas Mega Center', 'city': 'Dallas', 'state': 'TX', 'available_pallets': 300, 'cost_per_pallet': 78, 'reliability_score': 99}
+        ]
         
-        # Create scatter plot map
-        map_fig = px.scatter(
-            x=[s['longitude'] for s in stores],
-            y=[s['latitude'] for s in stores],
-            size=[s['pallets'] for s in stores],
-            color=[s['pallets'] for s in stores],
-            hover_name=[s['name'] for s in stores],
-            hover_data={
-                'x': False,
-                'y': False,
-                'size': False,
-                'color': False
-            },
-            custom_data=[[s['city'], s['state'], s['pallets']] for s in stores],
-            title="🗺️ Frito-Lay Store Locations & Demand Distribution",
-            labels={'x': 'Longitude', 'y': 'Latitude', 'color': 'Pallets', 'size': 'Demand'},
-            color_continuous_scale="Viridis",
-            size_max=20
-        )
-        
-        map_fig.update_traces(
-            hovertemplate="<b>%{hovertext}</b><br>" +
-                         "City: %{customdata[0]}<br>" +
-                         "State: %{customdata[1]}<br>" +
-                         "Pallets: %{customdata[2]}<br>" +
-                         "<extra></extra>"
-        )
-        
-        map_fig.update_layout(
-            height=400, 
-            margin=dict(t=50, b=20, l=20, r=20),
-            showlegend=True
-        )
+        total_pallets = sum(s['available_pallets'] for s in suppliers)
+        avg_cost = sum(s['cost_per_pallet'] for s in suppliers) / len(suppliers)
+        avg_reliability = sum(s['reliability_score'] for s in suppliers) / len(suppliers)
         
         return html.Div([
             html.H4([
-                html.I(className="fas fa-map-marked-alt me-2"),
-                "Geographic Distribution"
+                html.I(className="fas fa-industry me-2"),
+                "Frito-Lay Supplier Network"
             ], className="mb-4"),
             
-            dcc.Graph(figure=map_fig, config={'responsive': True}),
+            # Supplier statistics
+            dbc.Row([
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"{len(suppliers)}", className="text-primary mb-1"),
+                            html.P("Active Suppliers", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"{total_pallets:,}", className="text-success mb-1"),
+                            html.P("Total Capacity", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"${avg_cost:.0f}", className="text-warning mb-1"),
+                            html.P("Avg Cost/Pallet", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3"),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H5(f"{avg_reliability:.1f}%", className="text-info mb-1"),
+                            html.P("Avg Reliability", className="mb-0")
+                        ], className="text-center")
+                    ], className="metrics-card")
+                ], width=6, md=3, className="mb-3")
+            ]),
             
             html.Hr(className="my-4"),
             
-            # Geographic summary
-            html.H5("📊 Geographic Analysis", className="mb-3"),
-            dbc.Row([
-                dbc.Col([
-                    html.P([
-                        html.Strong("Coverage Area: "),
-                        "6 states across Midwest and South regions"
-                    ]),
-                    html.P([
-                        html.Strong("Largest Market: "),
-                        "Texas (3 stores, 26 pallets)"
-                    ]),
-                    html.P([
-                        html.Strong("Density: "),
-                        "Urban markets with high-volume locations"
-                    ])
-                ], width=12, md=6),
-                dbc.Col([
-                    html.P([
-                        html.Strong("Distribution Strategy: "),
-                        "Hub-and-spoke model"
-                    ]),
-                    html.P([
-                        html.Strong("Route Efficiency: "),
-                        "Optimized for minimal total distance"
-                    ]),
-                    html.P([
-                        html.Strong("Store Types: "),
-                        "Walmart, Target, Kroger, Meijer, Costco"
-                    ])
-                ], width=12, md=6)
-            ])
+            # Suppliers table
+            dash_table.DataTable(
+                data=suppliers,
+                columns=[
+                    {'name': '🏭 Supplier Name', 'id': 'name'},
+                    {'name': '📍 City', 'id': 'city'},
+                    {'name': '🗺️ State', 'id': 'state'},
+                    {'name': '📦 Available Pallets', 'id': 'available_pallets', 'type': 'numeric'},
+                    {'name': '💰 Cost per Pallet', 'id': 'cost_per_pallet', 'type': 'numeric', 'format': {'specifier': '$'}},
+                    {'name': '⭐ Reliability Score', 'id': 'reliability_score', 'type': 'numeric', 'format': {'specifier': '.0%'}}
+                ],
+                style_cell={
+                    'textAlign': 'left', 
+                    'fontFamily': 'Arial', 
+                    'fontSize': '14px',
+                    'padding': '12px',
+                    'maxWidth': '200px',
+                    'overflow': 'hidden',
+                    'textOverflow': 'ellipsis'
+                },
+                style_header={
+                    'backgroundColor': '#f8f9fa', 
+                    'fontWeight': 'bold',
+                    'border': '1px solid #dee2e6'
+                },
+                style_data={
+                    'border': '1px solid #dee2e6',
+                    'whiteSpace': 'normal',
+                    'height': 'auto'
+                },
+                style_data_conditional=[
+                    {
+                        'if': {'row_index': 'odd'},
+                        'backgroundColor': 'rgb(248, 249, 250)'
+                    },
+                    {
+                        'if': {'filter_query': '{reliability_score} > 97'},
+                        'backgroundColor': '#d1eddf',
+                        'color': 'black'
+                    },
+                    {
+                        'if': {'filter_query': '{cost_per_pallet} < 82'},
+                        'backgroundColor': '#cce5ff',
+                        'color': 'black'
+                    }
+                ],
+                sort_action="native",
+                page_size=10,
+                style_table={'overflowX': 'auto'}
+            )
         ])
-    
+
     def get_embedded_data(self):
-        """🍟 Embedded Frito-Lay demonstration data - no file system dependencies"""
         return {
             'summary': {
                 'total_cost': 8450,
@@ -609,19 +893,19 @@ class FritoLayLogisticsDemo:
                 'Labor Costs': 2112
             },
             'stores': [
-                {'name': 'Walmart Supercenter - Downtown Chicago', 'city': 'Chicago', 'state': 'IL', 'pallets': 8, 'priority': 'High', 'latitude': 41.8781, 'longitude': -87.6298},
-                {'name': 'Target Express - Milwaukee Downtown', 'city': 'Milwaukee', 'state': 'WI', 'pallets': 6, 'priority': 'Medium', 'latitude': 43.0389, 'longitude': -87.9065},
-                {'name': 'Kroger Marketplace - Detroit', 'city': 'Detroit', 'state': 'MI', 'pallets': 9, 'priority': 'High', 'latitude': 42.3314, 'longitude': -83.0458},
-                {'name': 'Meijer Supercenter - Cincinnati', 'city': 'Cincinnati', 'state': 'OH', 'pallets': 7, 'priority': 'Medium', 'latitude': 39.1031, 'longitude': -84.5120},
-                {'name': 'Walmart Neighborhood - Columbus', 'city': 'Columbus', 'state': 'OH', 'pallets': 5, 'priority': 'Low', 'latitude': 39.9612, 'longitude': -82.9988},
-                {'name': 'Kroger Fresh Fare - Cleveland', 'city': 'Cleveland', 'state': 'OH', 'pallets': 7, 'priority': 'Medium', 'latitude': 41.4993, 'longitude': -81.6944},
-                {'name': 'Costco Wholesale - Dallas', 'city': 'Dallas', 'state': 'TX', 'pallets': 10, 'priority': 'High', 'latitude': 32.7767, 'longitude': -96.7970},
-                {'name': 'Target Supercenter - Austin', 'city': 'Austin', 'state': 'TX', 'pallets': 8, 'priority': 'High', 'latitude': 30.2672, 'longitude': -97.7431},
-                {'name': 'Walmart Supercenter - Houston', 'city': 'Houston', 'state': 'TX', 'pallets': 8, 'priority': 'Medium', 'latitude': 29.7604, 'longitude': -95.3698}
+                {'name': 'Walmart Supercenter - Downtown Chicago', 'city': 'Chicago', 'state': 'IL', 'pallets': 8},
+                {'name': 'Target Express - Milwaukee Downtown', 'city': 'Milwaukee', 'state': 'WI', 'pallets': 6},
+                {'name': 'Kroger Marketplace - Detroit', 'city': 'Detroit', 'state': 'MI', 'pallets': 9},
+                {'name': 'Meijer Supercenter - Cincinnati', 'city': 'Cincinnati', 'state': 'OH', 'pallets': 7},
+                {'name': 'Walmart Neighborhood - Columbus', 'city': 'Columbus', 'state': 'OH', 'pallets': 5},
+                {'name': 'Kroger Fresh Fare - Cleveland', 'city': 'Cleveland', 'state': 'OH', 'pallets': 7},
+                {'name': 'Costco Wholesale - Dallas', 'city': 'Dallas', 'state': 'TX', 'pallets': 10},
+                {'name': 'Target Supercenter - Austin', 'city': 'Austin', 'state': 'TX', 'pallets': 8},
+                {'name': 'Walmart Supercenter - Houston', 'city': 'Houston', 'state': 'TX', 'pallets': 8}
             ]
         }
 
-# 🚀 Create dashboard instance
+# Create dashboard instance
 dashboard = FritoLayLogisticsDemo()
 
 # Vercel expects 'app' variable
