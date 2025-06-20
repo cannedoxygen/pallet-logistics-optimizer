@@ -110,7 +110,11 @@ class FritoLayLogisticsDemo:
                                     dbc.Badge([
                                         html.I(className="fas fa-award me-1"),
                                         "Enterprise Demo"
-                                    ], color="warning", className="mb-2 px-2 px-md-3 py-1 py-md-2", style={'fontSize': '12px'}),
+                                    ], color="warning", className="mb-2 me-2 px-2 px-md-3 py-1 py-md-2", style={'fontSize': '12px'}),
+                                    dbc.Button([
+                                        html.I(className="fas fa-question-circle me-1"),
+                                        "HOW TO"
+                                    ], id="how-to-btn", color="info", size="sm", className="mb-2 px-2 px-md-3 py-1 py-md-2", style={'fontSize': '12px'}),
                                     html.Br(className="d-none d-md-block"),
                                     html.Small([
                                         html.I(className="fas fa-shield-alt me-1"),
@@ -170,7 +174,214 @@ class FritoLayLogisticsDemo:
                 dbc.CardBody([
                     html.Div(id='tab-content', className="p-2 p-md-3")
                 ])
-            ], className="shadow-lg border-0")
+            ], className="shadow-lg border-0"),
+            
+            # How To Modal
+            dbc.Modal([
+                dbc.ModalHeader([
+                    html.H4([
+                        html.I(className="fas fa-lightbulb me-2", style={'color': '#FFD700'}),
+                        "How the Frito-Lay Logistics Optimizer Works"
+                    ], className="mb-0")
+                ]),
+                dbc.ModalBody([
+                    # Introduction
+                    dbc.Alert([
+                        html.H5([
+                            html.I(className="fas fa-rocket me-2"),
+                            "What This System Does"
+                        ], className="alert-heading"),
+                        html.P([
+                            "The Frito-Lay Logistics Optimizer uses ",
+                            html.Strong("advanced mathematical algorithms"),
+                            " to find the most cost-effective delivery routes for your snack distribution network. ",
+                            "It solves the complex Vehicle Routing Problem (VRP) using Mixed Integer Programming."
+                        ], className="mb-0")
+                    ], color="primary", className="mb-4"),
+                    
+                    # Step by Step Process
+                    html.H5([
+                        html.I(className="fas fa-cogs me-2"),
+                        "🔄 Optimization Process"
+                    ], className="mb-3"),
+                    
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Card([
+                                dbc.CardBody([
+                                    html.H6([
+                                        html.Span("1", className="badge bg-primary rounded-pill me-2"),
+                                        "📊 Data Input"
+                                    ]),
+                                    html.Ul([
+                                        html.Li("Store locations & demand"),
+                                        html.Li("Supplier capacities & costs"),
+                                        html.Li("Vehicle specifications"),
+                                        html.Li("Toll rates between cities")
+                                    ])
+                                ])
+                            ], className="h-100")
+                        ], width=12, md=6, className="mb-3"),
+                        dbc.Col([
+                            dbc.Card([
+                                dbc.CardBody([
+                                    html.H6([
+                                        html.Span("2", className="badge bg-success rounded-pill me-2"),
+                                        "🧮 Mathematical Optimization"
+                                    ]),
+                                    html.Ul([
+                                        html.Li("Mixed Integer Programming (MIP)"),
+                                        html.Li("Capacity constraint solving"),
+                                        html.Li("Distance minimization"),
+                                        html.Li("Cost optimization algorithms")
+                                    ])
+                                ])
+                            ], className="h-100")
+                        ], width=12, md=6, className="mb-3"),
+                        dbc.Col([
+                            dbc.Card([
+                                dbc.CardBody([
+                                    html.H6([
+                                        html.Span("3", className="badge bg-warning rounded-pill me-2"),
+                                        "🚛 Route Generation"
+                                    ]),
+                                    html.Ul([
+                                        html.Li("Optimal vehicle assignments"),
+                                        html.Li("Efficient stop sequences"),
+                                        html.Li("Load balancing"),
+                                        html.Li("Depot return paths")
+                                    ])
+                                ])
+                            ], className="h-100")
+                        ], width=12, md=6, className="mb-3"),
+                        dbc.Col([
+                            dbc.Card([
+                                dbc.CardBody([
+                                    html.H6([
+                                        html.Span("4", className="badge bg-info rounded-pill me-2"),
+                                        "📈 Results & Analytics"
+                                    ]),
+                                    html.Ul([
+                                        html.Li("Cost breakdown analysis"),
+                                        html.Li("Efficiency metrics"),
+                                        html.Li("Route visualizations"),
+                                        html.Li("Performance comparisons")
+                                    ])
+                                ])
+                            ], className="h-100")
+                        ], width=12, md=6, className="mb-3")
+                    ]),
+                    
+                    html.Hr(className="my-4"),
+                    
+                    # Cost Optimization
+                    html.H5([
+                        html.I(className="fas fa-dollar-sign me-2"),
+                        "💰 Cost Optimization Factors"
+                    ], className="mb-3"),
+                    
+                    dbc.Row([
+                        dbc.Col([
+                            html.Div([
+                                html.H6([
+                                    html.I(className="fas fa-gas-pump text-danger me-2"),
+                                    "Fuel Costs"
+                                ]),
+                                html.P("$0.65 per mile × total distance", className="small text-muted mb-0")
+                            ])
+                        ], width=6, md=3, className="mb-3"),
+                        dbc.Col([
+                            html.Div([
+                                html.H6([
+                                    html.I(className="fas fa-clock text-warning me-2"),
+                                    "Driver Labor"
+                                ]),
+                                html.P("$25 per hour × driving time", className="small text-muted mb-0")
+                            ])
+                        ], width=6, md=3, className="mb-3"),
+                        dbc.Col([
+                            html.Div([
+                                html.H6([
+                                    html.I(className="fas fa-road text-info me-2"),
+                                    "Toll Charges"
+                                ]),
+                                html.P("Variable rates per mile", className="small text-muted mb-0")
+                            ])
+                        ], width=6, md=3, className="mb-3"),
+                        dbc.Col([
+                            html.Div([
+                                html.H6([
+                                    html.I(className="fas fa-boxes text-success me-2"),
+                                    "Handling"
+                                ]),
+                                html.P("$15 per pallet loaded", className="small text-muted mb-0")
+                            ])
+                        ], width=6, md=3, className="mb-3")
+                    ]),
+                    
+                    html.Hr(className="my-4"),
+                    
+                    # How to Use
+                    html.H5([
+                        html.I(className="fas fa-user-cog me-2"),
+                        "🎯 How to Use This System"
+                    ], className="mb-3"),
+                    
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.Ol([
+                                html.Li([
+                                    html.Strong("Explore Current Results: "),
+                                    "Use the tabs above to see optimized routes, cost analysis, and store data"
+                                ]),
+                                html.Li([
+                                    html.Strong("Upload New Data: "),
+                                    "Click '📤 Upload Data' tab to add your own Excel files with store locations, suppliers, etc."
+                                ]),
+                                html.Li([
+                                    html.Strong("Recalculate Routes: "),
+                                    "After uploading, click 'Recalculate Routes' to generate new optimized delivery plans"
+                                ]),
+                                html.Li([
+                                    html.Strong("Analyze Results: "),
+                                    "Review cost savings, efficiency improvements, and route details in the updated dashboard"
+                                ])
+                            ])
+                        ])
+                    ], color="light", className="mb-4"),
+                    
+                    # Benefits
+                    dbc.Alert([
+                        html.H6([
+                            html.I(className="fas fa-chart-line me-2"),
+                            "Expected Benefits"
+                        ], className="alert-heading"),
+                        dbc.Row([
+                            dbc.Col([
+                                html.Ul([
+                                    html.Li("📉 15-25% cost reduction"),
+                                    html.Li("⚡ 87% vehicle utilization"),
+                                    html.Li("🎯 Optimal load distribution")
+                                ])
+                            ], width=6),
+                            dbc.Col([
+                                html.Ul([
+                                    html.Li("🛣️ Minimized empty miles"),
+                                    html.Li("⏱️ Faster delivery times"),
+                                    html.Li("📊 Data-driven decisions")
+                                ])
+                            ], width=6)
+                        ])
+                    ], color="success", className="mb-0")
+                ]),
+                dbc.ModalFooter([
+                    dbc.Button([
+                        html.I(className="fas fa-play me-2"),
+                        "Start Optimizing"
+                    ], id="close-how-to", color="primary", className="me-2"),
+                    dbc.Button("Close", id="close-how-to-alt", color="secondary")
+                ])
+            ], id="how-to-modal", size="xl", scrollable=True)
         ], fluid=True, className="bg-light min-vh-100")
 
     def setup_callbacks(self):
