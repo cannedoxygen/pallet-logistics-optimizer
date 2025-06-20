@@ -31,12 +31,34 @@ class ProfessionalPalletDashboard:
         self.setup_callbacks()
         
     def setup_layout(self):
+        # Add viewport meta tag for mobile responsiveness
+        self.app.index_string = '''
+        <!DOCTYPE html>
+        <html>
+            <head>
+                {%metas%}
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>{%title%}</title>
+                {%favicon%}
+                {%css%}
+            </head>
+            <body>
+                {%app_entry%}
+                <footer>
+                    {%config%}
+                    {%scripts%}
+                    {%renderer%}
+                </footer>
+            </body>
+        </html>
+        '''
+        
         self.app.layout = dbc.Container([
             dcc.Store(id='optimization-results-store'),
             dcc.Store(id='stores-data-store'),
             dcc.Store(id='suppliers-data-store'),
             
-            # Enhanced Header
+            # Enhanced Header - Mobile Responsive
             dbc.Row([
                 dbc.Col([
                     html.Div([
@@ -44,35 +66,38 @@ class ProfessionalPalletDashboard:
                             dbc.Col([
                                 html.Div([
                                     html.H1([
-                                        html.I(className="fas fa-truck me-3", style={'color': '#FFD700'}),
-                                        "Pallet Logistics Optimizer"
-                                    ], className="display-4 text-white font-weight-bold mb-2"),
+                                        html.I(className="fas fa-truck me-2", style={'color': '#FFD700'}),
+                                        html.Span("Pallet Logistics", className="d-none d-md-inline"),
+                                        html.Span("Optimizer", className="d-block d-md-inline")
+                                    ], className="h3 h1-md text-white font-weight-bold mb-2"),
                                     html.P([
                                         html.I(className="fas fa-chart-line me-2", style={'color': '#FFD700'}),
-                                        "Professional Route Optimization & Cost Analysis Platform"
-                                    ], className="lead text-white-75 mb-0")
+                                        html.Span("Professional Route Optimization & Cost Analysis", className="d-none d-md-inline"),
+                                        html.Span("Route Optimization Platform", className="d-block d-md-none")
+                                    ], className="small lead-md text-white-75 mb-0")
                                 ])
-                            ], width=8),
+                            ], width=12, md=8),
                             dbc.Col([
                                 html.Div([
                                     dbc.Badge([
                                         html.I(className="fas fa-award me-1"),
-                                        "Enterprise Grade"
-                                    ], color="warning", className="mb-2 px-3 py-2", style={'fontSize': '14px'}),
-                                    html.Br(),
+                                        "Enterprise"
+                                    ], color="warning", className="mb-2 px-2 px-md-3 py-1 py-md-2", style={'fontSize': '12px'}),
+                                    html.Br(className="d-none d-md-block"),
                                     html.Small([
                                         html.I(className="fas fa-shield-alt me-1"),
-                                        "Secure • Scalable • Reliable"
+                                        html.Span("Secure • Reliable", className="d-block d-md-none"),
+                                        html.Span("Secure • Scalable • Reliable", className="d-none d-md-inline")
                                     ], className="text-white-50"),
                                     html.Br(),
                                     html.Small([
                                         html.I(className="fas fa-user-tie me-1"),
                                         "Made by Lyndsey Gledhill"
-                                    ], className="text-white-75", style={'fontSize': '12px', 'marginTop': '5px'})
-                                ], className="text-end")
-                            ], width=4)
+                                    ], className="text-white-75", style={'fontSize': '11px'})
+                                ], className="text-end text-center text-md-end")
+                            ], width=12, md=4)
                         ])
-                    ], className="py-4 px-4")
+                    ], className="py-3 py-md-4 px-3 px-md-4")
                 ])
             ], className="bg-gradient-primary shadow-lg mb-4", style={
                 'background': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -100,7 +125,7 @@ class ProfessionalPalletDashboard:
                 ])
             ]),
             
-            # Main Content
+            # Main Content - Mobile Responsive
             dbc.Row([
                 # Control Panel
                 dbc.Col([
@@ -169,7 +194,7 @@ class ProfessionalPalletDashboard:
                             ])
                         ])
                     ], className="shadow-sm")
-                ], width=4),
+                ], width=12, lg=4, className="mb-4 mb-lg-0"),
                 
                 # Results Panel
                 dbc.Col([
@@ -194,7 +219,7 @@ class ProfessionalPalletDashboard:
                             html.Div(id='tab-content', className="p-3")
                         ])
                     ], className="shadow-sm")
-                ], width=8)
+                ], width=12, lg=8)
             ])
         ], fluid=True, className="bg-light min-vh-100")
 
@@ -576,7 +601,7 @@ class ProfessionalPalletDashboard:
         pie_fig = px.pie(values=values, names=costs, 
                         title="Cost Breakdown Analysis",
                         color_discrete_sequence=px.colors.qualitative.Set3)
-        pie_fig.update_layout(showlegend=True, height=400)
+        pie_fig.update_layout(showlegend=True, height=350, margin=dict(t=50, b=20, l=20, r=20))
         
         # Route efficiency bar chart
         routes = results_data['routes']
@@ -589,17 +614,17 @@ class ProfessionalPalletDashboard:
                         labels={'x': 'Vehicle', 'y': 'Distance (miles)'},
                         color=distances,
                         color_continuous_scale="Blues")
-        bar_fig.update_layout(showlegend=False, height=400)
+        bar_fig.update_layout(showlegend=False, height=350, margin=dict(t=50, b=50, l=50, r=20))
         
         return html.Div([
             html.H4("Cost Analytics", className="mb-4"),
             dbc.Row([
                 dbc.Col([
-                    dcc.Graph(figure=pie_fig)
-                ], width=6),
+                    dcc.Graph(figure=pie_fig, config={'responsive': True})
+                ], width=12, lg=6, className="mb-3 mb-lg-0"),
                 dbc.Col([
-                    dcc.Graph(figure=bar_fig)
-                ], width=6)
+                    dcc.Graph(figure=bar_fig, config={'responsive': True})
+                ], width=12, lg=6)
             ])
         ])
     
@@ -644,11 +669,11 @@ class ProfessionalPalletDashboard:
             color='demand_pallets',
             color_continuous_scale="Viridis"
         )
-        map_fig.update_layout(height=500)
+        map_fig.update_layout(height=400, margin=dict(t=50, b=20, l=20, r=20))
         
         return html.Div([
             html.H4("Geographic View", className="mb-4"),
-            dcc.Graph(figure=map_fig)
+            dcc.Graph(figure=map_fig, config={'responsive': True})
         ])
     
     def run(self, debug=True, port=8050):
