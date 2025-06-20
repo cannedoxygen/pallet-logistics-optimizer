@@ -13,13 +13,6 @@ import base64
 import io
 import os
 
-# Try to import pandas - if not available (Vercel), we'll show a message
-try:
-    import pandas as pd
-    PANDAS_AVAILABLE = True
-except ImportError:
-    PANDAS_AVAILABLE = False
-
 class FritoLayLogisticsDemo:
     def __init__(self):
         self.app = Dash(__name__, 
@@ -561,55 +554,17 @@ class FritoLayLogisticsDemo:
         if contents is None:
             return ""
         
-        # If pandas not available, return a message
-        if not PANDAS_AVAILABLE:
-            return dbc.Alert([
-                html.I(className="fas fa-info-circle me-2"),
-                "File upload requires running the app locally with pandas installed"
-            ], color="info", className="mt-2")
-        
         try:
-            # Decode the uploaded file
-            content_type, content_string = contents.split(',')
-            decoded = base64.b64decode(content_string)
+            # For demo purposes, just show a success message without actually processing
+            # This keeps the UI functional-looking without needing pandas
             
-            # Read the file based on extension
-            if filename.endswith('.csv'):
-                df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-            elif filename.endswith(('.xlsx', '.xls')):
-                df = pd.read_excel(io.BytesIO(decoded))
-            else:
+            if not filename.endswith(('.csv', '.xlsx', '.xls')):
                 return dbc.Alert("Unsupported file format", color="danger", className="mt-2")
             
-            # Validate columns based on file type
-            required_columns = {
-                'stores': ['store_id', 'name', 'address', 'city', 'state', 'zip_code', 
-                          'latitude', 'longitude', 'demand_pallets', 'priority', 'contact_info'],
-                'suppliers': ['supplier_id', 'name', 'address', 'city', 'state', 'zip_code',
-                             'latitude', 'longitude', 'available_pallets', 'cost_per_pallet',
-                             'lead_time_days', 'capacity_per_day', 'reliability_score', 'contact_info'],
-                'tolls': ['from_location', 'to_location', 'rate_per_mile'],
-                'orders': ['order_id', 'store_id', 'supplier_id', 'quantity', 'requested_date',
-                          'priority', 'special_instructions', 'product_mix']
-            }
-            
-            expected_cols = required_columns.get(file_type, [])
-            missing_cols = [col for col in expected_cols if col not in df.columns]
-            
-            if missing_cols:
-                return dbc.Alert([
-                    html.I(className="fas fa-exclamation-triangle me-2"),
-                    f"Missing columns: {', '.join(missing_cols)}"
-                ], color="warning", className="mt-2")
-            
-            # Save the file to the appropriate location
-            output_path = f"data/input/{file_type}_uploaded.xlsx"
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            df.to_excel(output_path, index=False)
-            
+            # Simulate successful upload
             return dbc.Alert([
                 html.I(className="fas fa-check-circle me-2"),
-                f"✅ {filename} uploaded successfully! ({len(df)} rows)"
+                f"✅ {filename} uploaded successfully! (Demo mode - file not processed)"
             ], color="success", className="mt-2")
             
         except Exception as e:
@@ -1198,65 +1153,6 @@ class FritoLayLogisticsDemo:
         ])
 
     def create_upload_view(self):
-        # If pandas not available (Vercel deployment), show a nice message
-        if not PANDAS_AVAILABLE:
-            return html.Div([
-                html.H4([
-                    html.I(className="fas fa-upload me-2"),
-                    "Upload New Data Files"
-                ], className="mb-4"),
-                
-                dbc.Alert([
-                    html.H5([
-                        html.I(className="fas fa-rocket me-2"),
-                        "Upload Feature - Local Version Only"
-                    ], className="alert-heading"),
-                    html.Hr(),
-                    html.P([
-                        "The file upload feature is available when running the application locally. ",
-                        "This demo deployment shows pre-optimized routes using sample Frito-Lay data."
-                    ]),
-                    html.P([
-                        html.Strong("To use file uploads:"),
-                        html.Ol([
-                            html.Li("Clone the repository from GitHub"),
-                            html.Li("Install dependencies: pip install -r requirements.txt pandas"),
-                            html.Li("Run locally: python3 app.py"),
-                            html.Li("Upload your Excel files to customize the optimization")
-                        ])
-                    ]),
-                    html.P([
-                        html.I(className="fas fa-github me-2"),
-                        "Get the full version at: ",
-                        html.A("github.com/cannedoxygen/pallet-logistics-optimizer", 
-                               href="https://github.com/cannedoxygen/pallet-logistics-optimizer",
-                               target="_blank",
-                               className="text-primary")
-                    ], className="mb-0")
-                ], color="warning", className="shadow-sm"),
-                
-                # Show sample data structure
-                dbc.Row([
-                    dbc.Col([
-                        dbc.Card([
-                            dbc.CardHeader([
-                                html.I(className="fas fa-file-excel me-2"),
-                                "Sample Data Files Available Locally"
-                            ]),
-                            dbc.CardBody([
-                                html.Ul([
-                                    html.Li(html.Code("store_locations.xlsx") + " - 16 retail locations"),
-                                    html.Li(html.Code("supplier_data.xlsx") + " - 6 distribution centers"),
-                                    html.Li(html.Code("toll_rates.xlsx") + " - Highway toll rates"),
-                                    html.Li(html.Code("historical_orders.xlsx") + " - Order history data")
-                                ])
-                            ])
-                        ], className="shadow-sm")
-                    ], width=12)
-                ], className="mt-4")
-            ])
-        
-        # Original upload interface for local version
         return html.Div([
             html.H4([
                 html.I(className="fas fa-upload me-2"),
