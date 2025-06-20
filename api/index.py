@@ -1114,55 +1114,215 @@ class FritoLayLogisticsDemo:
                 "Upload New Data Files"
             ], className="mb-4"),
             
-            # Vercel deployment notice
+            # Instructions
             dbc.Alert([
                 html.H5([
-                    html.I(className="fas fa-rocket me-2"),
-                    "Upload Feature - Local Version Only"
+                    html.I(className="fas fa-info-circle me-2"),
+                    "File Upload Instructions"
                 ], className="alert-heading"),
                 html.Hr(),
                 html.P([
-                    "The file upload feature is available when running the application locally. ",
-                    "This demo deployment shows pre-optimized routes using sample Frito-Lay data."
+                    "Upload your Excel files to replace the current data and automatically recalculate optimal routes. ",
+                    "Make sure your files follow the exact column structure shown below."
                 ]),
                 html.P([
-                    html.Strong("To use file uploads:"),
-                    html.Ol([
-                        html.Li("Clone the repository from GitHub"),
-                        html.Li("Install dependencies: pip install -r requirements.txt pandas"),
-                        html.Li("Run locally: python3 app.py"),
-                        html.Li("Upload your Excel files to customize the optimization")
-                    ])
+                    html.Strong("Supported files: "), 
+                    ".xlsx, .xls, .csv"
                 ]),
                 html.P([
-                    html.I(className="fas fa-github me-2"),
-                    "Get the full version at: ",
-                    html.A("github.com/cannedoxygen/pallet-logistics-optimizer", 
-                           href="https://github.com/cannedoxygen/pallet-logistics-optimizer",
-                           target="_blank",
-                           className="text-primary")
+                    html.I(className="fas fa-download me-1"),
+                    html.Strong("Need templates? "),
+                    "Download sample files with the correct format from the examples in the ",
+                    html.Code("data/input/"),
+                    " folder."
                 ], className="mb-0")
-            ], color="warning", className="shadow-sm"),
+            ], color="info", className="mb-4"),
             
-            # Show sample data structure
+            # File Upload Cards
             dbc.Row([
+                # Store Locations Upload
                 dbc.Col([
                     dbc.Card([
                         dbc.CardHeader([
-                            html.I(className="fas fa-file-excel me-2"),
-                            "Sample Data Files Available Locally"
+                            html.H5([
+                                html.I(className="fas fa-store me-2"),
+                                "Store Locations"
+                            ], className="mb-0")
                         ]),
                         dbc.CardBody([
-                            html.Ul([
-                                html.Li(html.Code("store_locations.xlsx") + " - 16 retail locations"),
-                                html.Li(html.Code("supplier_data.xlsx") + " - 6 distribution centers"),
-                                html.Li(html.Code("toll_rates.xlsx") + " - Highway toll rates"),
-                                html.Li(html.Code("historical_orders.xlsx") + " - Order history data")
+                            html.Div([
+                                html.I(className="fas fa-cloud-upload-alt fa-2x mb-2"),
+                                html.Br(),
+                                'Drag and Drop or ',
+                                html.A('Select store_locations.xlsx')
+                            ], className="text-center p-4", style={
+                                'width': '100%',
+                                'height': '120px',
+                                'lineHeight': '120px',
+                                'borderWidth': '2px',
+                                'borderStyle': 'dashed',
+                                'borderRadius': '10px',
+                                'borderColor': '#007bff',
+                                'backgroundColor': '#f8f9fa'
+                            }),
+                            html.Hr(),
+                            html.Small([
+                                html.Strong("Required columns: "),
+                                "store_id, name, address, city, state, zip_code, latitude, longitude, demand_pallets, priority, contact_info"
+                            ], className="text-muted"),
+                            html.Div([
+                                dbc.Alert([
+                                    html.I(className="fas fa-info-circle me-2"),
+                                    "Demo mode - file upload available in local version"
+                                ], color="light", className="mt-2 mb-0")
                             ])
                         ])
-                    ], className="shadow-sm")
-                ], width=12)
-            ], className="mt-4")
+                    ], className="mb-3")
+                ], width=12, lg=6),
+                
+                # Supplier Data Upload  
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5([
+                                html.I(className="fas fa-industry me-2"),
+                                "Supplier Data"
+                            ], className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            html.Div([
+                                html.I(className="fas fa-cloud-upload-alt fa-2x mb-2"),
+                                html.Br(),
+                                'Drag and Drop or ',
+                                html.A('Select supplier_data.xlsx')
+                            ], className="text-center p-4", style={
+                                'width': '100%',
+                                'height': '120px',
+                                'lineHeight': '120px',
+                                'borderWidth': '2px',
+                                'borderStyle': 'dashed',
+                                'borderRadius': '10px',
+                                'borderColor': '#28a745',
+                                'backgroundColor': '#f8f9fa'
+                            }),
+                            html.Hr(),
+                            html.Small([
+                                html.Strong("Required columns: "),
+                                "supplier_id, name, address, city, state, zip_code, latitude, longitude, available_pallets, cost_per_pallet, lead_time_days, capacity_per_day, reliability_score, contact_info"
+                            ], className="text-muted"),
+                            html.Div([
+                                dbc.Alert([
+                                    html.I(className="fas fa-info-circle me-2"),
+                                    "Demo mode - file upload available in local version"
+                                ], color="light", className="mt-2 mb-0")
+                            ])
+                        ])
+                    ], className="mb-3")
+                ], width=12, lg=6),
+                
+                # Toll Rates Upload
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5([
+                                html.I(className="fas fa-road me-2"),
+                                "Toll Rates"
+                            ], className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            html.Div([
+                                html.I(className="fas fa-cloud-upload-alt fa-2x mb-2"),
+                                html.Br(),
+                                'Drag and Drop or ',
+                                html.A('Select toll_rates.xlsx')
+                            ], className="text-center p-4", style={
+                                'width': '100%',
+                                'height': '120px',
+                                'lineHeight': '120px',
+                                'borderWidth': '2px',
+                                'borderStyle': 'dashed',
+                                'borderRadius': '10px',
+                                'borderColor': '#ffc107',
+                                'backgroundColor': '#f8f9fa'
+                            }),
+                            html.Hr(),
+                            html.Small([
+                                html.Strong("Required columns: "),
+                                "from_location, to_location, rate_per_mile"
+                            ], className="text-muted"),
+                            html.Div([
+                                dbc.Alert([
+                                    html.I(className="fas fa-info-circle me-2"),
+                                    "Demo mode - file upload available in local version"
+                                ], color="light", className="mt-2 mb-0")
+                            ])
+                        ])
+                    ], className="mb-3")
+                ], width=12, lg=6),
+                
+                # Historical Orders Upload
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5([
+                                html.I(className="fas fa-history me-2"),
+                                "Historical Orders"
+                            ], className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            html.Div([
+                                html.I(className="fas fa-cloud-upload-alt fa-2x mb-2"),
+                                html.Br(),
+                                'Drag and Drop or ',
+                                html.A('Select historical_orders.xlsx')
+                            ], className="text-center p-4", style={
+                                'width': '100%',
+                                'height': '120px',
+                                'lineHeight': '120px',
+                                'borderWidth': '2px',
+                                'borderStyle': 'dashed',
+                                'borderRadius': '10px',
+                                'borderColor': '#dc3545',
+                                'backgroundColor': '#f8f9fa'
+                            }),
+                            html.Hr(),
+                            html.Small([
+                                html.Strong("Required columns: "),
+                                "order_id, store_id, supplier_id, quantity, requested_date, priority, special_instructions, product_mix"
+                            ], className="text-muted"),
+                            html.Div([
+                                dbc.Alert([
+                                    html.I(className="fas fa-info-circle me-2"),
+                                    "Demo mode - file upload available in local version"
+                                ], color="light", className="mt-2 mb-0")
+                            ])
+                        ])
+                    ], className="mb-3")
+                ], width=12, lg=6)
+            ]),
+            
+            # Process Button
+            html.Hr(className="my-4"),
+            dbc.Row([
+                dbc.Col([
+                    dbc.Button([
+                        html.I(className="fas fa-cogs me-2"),
+                        "Recalculate Routes with New Data"
+                    ], 
+                    color="primary", 
+                    size="lg", 
+                    className="w-100",
+                    disabled=True),
+                    dbc.Alert([
+                        html.I(className="fas fa-github me-2"),
+                        "Full file upload functionality available when running locally. ",
+                        html.A("Get the complete version here", 
+                               href="https://github.com/cannedoxygen/pallet-logistics-optimizer",
+                               target="_blank",
+                               className="text-primary")
+                    ], color="info", className="mt-3 mb-0")
+                ], width=12, md=6, className="mx-auto")
+            ])
         ])
 
     def get_embedded_data(self):
