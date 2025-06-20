@@ -9,10 +9,16 @@ from dash import Dash, dcc, html, Input, Output, callback, dash_table, State
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
 import base64
 import io
 import os
+
+# Try to import pandas - if not available (Vercel), we'll show a message
+try:
+    import pandas as pd
+    PANDAS_AVAILABLE = True
+except ImportError:
+    PANDAS_AVAILABLE = False
 
 class FritoLayLogisticsDemo:
     def __init__(self):
@@ -554,6 +560,13 @@ class FritoLayLogisticsDemo:
     def process_upload(self, contents, filename, file_type):
         if contents is None:
             return ""
+        
+        # If pandas not available, return a message
+        if not PANDAS_AVAILABLE:
+            return dbc.Alert([
+                html.I(className="fas fa-info-circle me-2"),
+                "File upload requires running the app locally with pandas installed"
+            ], color="info", className="mt-2")
         
         try:
             # Decode the uploaded file
@@ -1185,6 +1198,65 @@ class FritoLayLogisticsDemo:
         ])
 
     def create_upload_view(self):
+        # If pandas not available (Vercel deployment), show a nice message
+        if not PANDAS_AVAILABLE:
+            return html.Div([
+                html.H4([
+                    html.I(className="fas fa-upload me-2"),
+                    "Upload New Data Files"
+                ], className="mb-4"),
+                
+                dbc.Alert([
+                    html.H5([
+                        html.I(className="fas fa-rocket me-2"),
+                        "Upload Feature - Local Version Only"
+                    ], className="alert-heading"),
+                    html.Hr(),
+                    html.P([
+                        "The file upload feature is available when running the application locally. ",
+                        "This demo deployment shows pre-optimized routes using sample Frito-Lay data."
+                    ]),
+                    html.P([
+                        html.Strong("To use file uploads:"),
+                        html.Ol([
+                            html.Li("Clone the repository from GitHub"),
+                            html.Li("Install dependencies: pip install -r requirements.txt pandas"),
+                            html.Li("Run locally: python3 app.py"),
+                            html.Li("Upload your Excel files to customize the optimization")
+                        ])
+                    ]),
+                    html.P([
+                        html.I(className="fas fa-github me-2"),
+                        "Get the full version at: ",
+                        html.A("github.com/cannedoxygen/pallet-logistics-optimizer", 
+                               href="https://github.com/cannedoxygen/pallet-logistics-optimizer",
+                               target="_blank",
+                               className="text-primary")
+                    ], className="mb-0")
+                ], color="warning", className="shadow-sm"),
+                
+                # Show sample data structure
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card([
+                            dbc.CardHeader([
+                                html.I(className="fas fa-file-excel me-2"),
+                                "Sample Data Files Available Locally"
+                            ]),
+                            dbc.CardBody([
+                                html.Ul([
+                                    html.Li(html.Code("store_locations.xlsx") + " - 16 retail locations"),
+                                    html.Li(html.Code("supplier_data.xlsx") + " - 6 distribution centers"),
+                                    html.Li(html.Code("toll_rates.xlsx") + " - Highway toll rates"),
+                                    html.Li(html.Code("historical_orders.xlsx") + " - Order history data")
+                                ])
+                            ])
+                        ], className="shadow-sm")
+                    ], width=12)
+                ], className="mt-4")
+            ])
+        
+        # Original upload interface for local version
         return html.Div([
             html.H4([
                 html.I(className="fas fa-upload me-2"),
