@@ -537,6 +537,19 @@ class FritoLayLogisticsDemo:
                         f"Error recalculating routes: {str(e)}"
                     ], color="danger", className="mt-2")
             return ""
+        
+        # HOW TO Modal toggle callback
+        @self.app.callback(
+            Output('how-to-modal', 'is_open'),
+            [Input('how-to-btn', 'n_clicks'),
+             Input('close-how-to', 'n_clicks'),
+             Input('close-how-to-alt', 'n_clicks')],
+            [State('how-to-modal', 'is_open')]
+        )
+        def toggle_modal(n1, n2, n3, is_open):
+            if n1 or n2 or n3:
+                return not is_open
+            return is_open
     
     def process_upload(self, contents, filename, file_type):
         if contents is None:
