@@ -7,8 +7,6 @@ Made by Lyndsey Gledhill
 
 from dash import Dash, dcc, html, Input, Output, callback, dash_table, State
 import dash_bootstrap_components as dbc
-import plotly.express as px
-import plotly.graph_objects as go
 
 class FritoLayLogisticsDemo:
     def __init__(self):
@@ -579,48 +577,85 @@ class FritoLayLogisticsDemo:
     def create_cost_analysis(self, data):
         cost_data = data['cost_breakdown']
         
-        pie_fig = px.pie(
-            values=list(cost_data.values()), 
-            names=list(cost_data.keys()),
-            title="Cost Breakdown Analysis",
-            color_discrete_sequence=['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57']
-        )
-        pie_fig.update_layout(
-            height=350, 
-            margin=dict(t=50, b=20, l=20, r=20),
-            font=dict(size=12)
-        )
-        
-        # Route efficiency comparison
-        routes = data['routes']
-        route_names = [f"Route {i+1}" for i in range(len(routes))]
-        efficiency_scores = [route.get('efficiency', 0.7) * 100 for route in routes]
-        
-        bar_fig = px.bar(
-            x=route_names, 
-            y=efficiency_scores,
-            title="Route Efficiency Comparison",
-            labels={'x': 'Route', 'y': 'Efficiency (%)'},
-            color=efficiency_scores,
-            color_continuous_scale="RdYlGn"
-        )
-        bar_fig.update_layout(
-            height=350, 
-            margin=dict(t=50, b=50, l=50, r=20),
-            showlegend=False
-        )
+        # Create simple visual breakdown without plotly (serverless-friendly)
+        total_cost = sum(cost_data.values())
         
         return html.Div([
             html.H4([
                 html.I(className="fas fa-chart-pie me-2"),
                 "Cost Analytics Dashboard"
             ], className="mb-4"),
+            
+            # Cost breakdown visualization with progress bars
             dbc.Row([
                 dbc.Col([
-                    dcc.Graph(figure=pie_fig, config={'responsive': True})
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5("Cost Breakdown Analysis", className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            # Vehicle Operations
+                            html.Div([
+                                html.H6("Vehicle Operations", className="mb-2"),
+                                dbc.Progress(
+                                    value=(cost_data['Vehicle Operations']/total_cost)*100,
+                                    color="primary",
+                                    className="mb-2"
+                                ),
+                                html.Small(f"${cost_data['Vehicle Operations']:,} ({cost_data['Vehicle Operations']/total_cost:.1%})", className="text-muted")
+                            ], className="mb-3"),
+                            
+                            # Fuel Costs
+                            html.Div([
+                                html.H6("Fuel Costs", className="mb-2"),
+                                dbc.Progress(
+                                    value=(cost_data['Fuel Costs']/total_cost)*100,
+                                    color="info",
+                                    className="mb-2"
+                                ),
+                                html.Small(f"${cost_data['Fuel Costs']:,} ({cost_data['Fuel Costs']/total_cost:.1%})", className="text-muted")
+                            ], className="mb-3"),
+                            
+                            # Labor Costs
+                            html.Div([
+                                html.H6("Labor Costs", className="mb-2"),
+                                dbc.Progress(
+                                    value=(cost_data['Labor Costs']/total_cost)*100,
+                                    color="warning",
+                                    className="mb-2"
+                                ),
+                                html.Small(f"${cost_data['Labor Costs']:,} ({cost_data['Labor Costs']/total_cost:.1%})", className="text-muted")
+                            ])
+                        ])
+                    ], className="shadow-sm")
                 ], width=12, lg=6, className="mb-3 mb-lg-0"),
+                
                 dbc.Col([
-                    dcc.Graph(figure=bar_fig, config={'responsive': True})
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H5("Route Efficiency", className="mb-0")
+                        ]),
+                        dbc.CardBody([
+                            # Route efficiency bars
+                            html.Div([
+                                html.Div([
+                                    html.H6("Route 1", className="mb-2"),
+                                    dbc.Progress(value=88, color="success", className="mb-3"),
+                                    html.Small("88% Efficient", className="text-success")
+                                ], className="mb-3"),
+                                html.Div([
+                                    html.H6("Route 2", className="mb-2"),
+                                    dbc.Progress(value=73, color="warning", className="mb-3"),
+                                    html.Small("73% Efficient", className="text-warning")
+                                ], className="mb-3"),
+                                html.Div([
+                                    html.H6("Route 3", className="mb-2"),
+                                    dbc.Progress(value=96, color="success", className="mb-3"),
+                                    html.Small("96% Efficient", className="text-success")
+                                ])
+                            ])
+                        ])
+                    ], className="shadow-sm")
                 ], width=12, lg=6)
             ]),
             
