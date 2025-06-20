@@ -16,8 +16,7 @@ class FritoLayLogisticsDemo:
                        external_stylesheets=[
                            dbc.themes.BOOTSTRAP,
                            "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-                       ],
-                       requests_pathname_prefix="/")
+                       ])
         self.app.title = "Frito-Lay Logistics Optimizer - Demo"
         self.setup_layout()
         self.setup_callbacks()
@@ -1190,9 +1189,5 @@ class FritoLayLogisticsDemo:
 # Create dashboard instance
 dashboard = FritoLayLogisticsDemo()
 
-# Vercel handler function
-def handler(request, response):
-    return dashboard.app.server(request, response)
-
-# Export for compatibility
+# Export Flask server for Vercel
 app = dashboard.app.server
