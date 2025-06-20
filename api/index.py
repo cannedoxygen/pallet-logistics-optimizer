@@ -18,7 +18,7 @@ class FritoLayLogisticsDemo:
                            "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
                        ],
                        requests_pathname_prefix="/")
-        self.app.title = "🍟 Frito-Lay Logistics Optimizer - Demo"
+        self.app.title = "Frito-Lay Logistics Optimizer - Demo"
         self.setup_layout()
         self.setup_callbacks()
         
@@ -92,7 +92,7 @@ class FritoLayLogisticsDemo:
                                 html.Div([
                                     html.H1([
                                         html.I(className="fas fa-truck me-2", style={'color': '#FFD700'}),
-                                        html.Span("🍟 Frito-Lay", className="d-none d-md-inline"),
+                                        html.Span("Frito-Lay", className="d-none d-md-inline"),
                                         html.Span("Logistics Optimizer", className="d-block d-md-inline")
                                     ], className="h3 h1-md text-white font-weight-bold mb-2"),
                                     html.P([
@@ -132,7 +132,7 @@ class FritoLayLogisticsDemo:
                     dbc.Alert([
                         html.H4([
                             html.I(className="fas fa-info-circle me-2"),
-                            "🍟 Live Frito-Lay Logistics Demo"
+                            "Live Frito-Lay Logistics Demo"
                         ], className="alert-heading"),
                         html.Hr(),
                         html.P([
@@ -158,7 +158,6 @@ class FritoLayLogisticsDemo:
                         dbc.Tab(label="🚛 Route Overview", tab_id="routes", className="fw-bold"),
                         dbc.Tab(label="💰 Cost Analytics", tab_id="costs", className="fw-bold"),
                         dbc.Tab(label="🏪 Store Network", tab_id="stores", className="fw-bold"),
-                        dbc.Tab(label="📍 Geographic Map", tab_id="map", className="fw-bold"),
                     ], id="main-tabs", active_tab="routes")
                 ]),
                 dbc.CardBody([
@@ -352,7 +351,7 @@ class FritoLayLogisticsDemo:
         pie_fig = px.pie(
             values=list(cost_data.values()), 
             names=list(cost_data.keys()),
-            title="💰 Cost Breakdown Analysis",
+            title="Cost Breakdown Analysis",
             color_discrete_sequence=['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57']
         )
         pie_fig.update_layout(
@@ -369,7 +368,7 @@ class FritoLayLogisticsDemo:
         bar_fig = px.bar(
             x=route_names, 
             y=efficiency_scores,
-            title="📊 Route Efficiency Comparison",
+            title="Route Efficiency Comparison",
             labels={'x': 'Route', 'y': 'Efficiency (%)'},
             color=efficiency_scores,
             color_continuous_scale="RdYlGn"
@@ -396,7 +395,7 @@ class FritoLayLogisticsDemo:
             
             # Cost summary cards
             html.Hr(className="my-4"),
-            html.H5("💸 Cost Summary", className="mb-3"),
+            html.H5("Cost Summary", className="mb-3"),
             dbc.Row([
                 dbc.Col([
                     dbc.Card([
