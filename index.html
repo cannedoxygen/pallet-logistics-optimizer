@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frito-Lay Logistics Optimizer</title>
+    <script src="https://unpkg.com/dash@2.14.1/dash/dash-renderer/build/dash_renderer.prod.js"></script>
+    <script src="https://unpkg.com/dash@2.14.1/dash/dash-html-components/build/dash_html_components.prod.js"></script>
+    <script src="https://unpkg.com/dash@2.14.1/dash/dash-core-components/build/dash_core_components.prod.js"></script>
+    <script src="https://unpkg.com/plotly.js@2.24.1/dist/plotly.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .custom-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border-bottom: 4px solid #FFD700;
+        }
+        .metrics-card {
+            transition: all 0.3s ease;
+            border: none !important;
+        }
+        .metrics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
+        .route-card {
+            transition: all 0.2s ease;
+            border-left: 4px solid #007bff;
+        }
+        .route-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .efficiency-high { border-left-color: #28a745 !important; }
+        .efficiency-medium { border-left-color: #ffc107 !important; }
+        .efficiency-low { border-left-color: #dc3545 !important; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid bg-light min-vh-100">
+        <!-- Header -->
+        <div class="row">
+            <div class="col">
+                <div class="custom-header shadow-lg mb-4 py-4 px-4">
+                    <div class="row">
+                        <div class="col-12 col-md-8">
+                            <h1 class="h3 h1-md text-white font-weight-bold mb-2">
+                                <i class="fas fa-truck me-2" style="color: #FFD700;"></i>
+                                <span class="d-none d-md-inline">Frito-Lay</span>
+                                <span class="d-block d-md-inline">Logistics Optimizer</span>
+                            </h1>
+                            <p class="small lead-md text-white-75 mb-0">
+                                <i class="fas fa-chart-line me-2" style="color: #FFD700;"></i>
+                                <span class="d-none d-md-inline">Professional Route Optimization & Cost Analysis</span>
+                                <span class="d-block d-md-none">Route Optimization Demo</span>
+                            </p>
+                        </div>
+                        <div class="col-12 col-md-4 text-end text-center text-md-end">
+                            <span class="badge bg-warning mb-2 px-2 px-md-3 py-1 py-md-2" style="font-size: 12px;">
+                                <i class="fas fa-award me-1"></i>
+                                Enterprise Demo
+                            </span>
+                            <br>
+                            <small class="text-white-50">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                <span class="d-block d-md-none">Live Demo</span>
+                                <span class="d-none d-md-inline">Secure • Scalable • Reliable</span>
+                            </small>
+                            <br>
+                            <small class="text-white-75" style="font-size: 11px;">
+                                <i class="fas fa-user-tie me-1"></i>
+                                Made by Lyndsey Gledhill
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Notice -->
+        <div class="row">
+            <div class="col">
+                <div class="alert alert-info mb-4">
+                    <h4 class="alert-heading">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Live Frito-Lay Logistics Demo
+                    </h4>
+                    <hr>
+                    <p>
+                        This is a live demonstration of the Pallet Logistics Optimizer using realistic Frito-Lay data. 
+                        The system shows optimized delivery routes for <strong>9 retail locations</strong> 
+                        across 6 states, with snack product deliveries totaling <strong>$8,450 in optimized costs</strong>.
+                    </p>
+                    <p class="mb-0 text-primary fw-bold">
+                        <i class="fas fa-chart-bar me-1"></i>
+                        For the full interactive dashboard, please run locally: <code>python3 app.py</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="row g-2 g-lg-3 mb-4">
+            <div class="col-6 col-lg">
+                <div class="card metrics-card shadow-sm border-0 h-100">
+                    <div class="card-body text-center py-2">
+                        <h3 class="text-primary mb-1 h4 h3-md">$8,450</h3>
+                        <p class="text-muted mb-0 small">Total Cost</p>
+                        <small class="text-success">
+                            <i class="fas fa-arrow-down me-1 text-success"></i>
+                            15% optimized
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg">
+                <div class="card metrics-card shadow-sm border-0 h-100">
+                    <div class="card-body text-center py-2">
+                        <h3 class="text-info mb-1 h4 h3-md">1,247</h3>
+                        <p class="text-muted mb-0 small">Miles</p>
+                        <small class="text-info">
+                            <i class="fas fa-route me-1"></i>
+                            3 routes
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg">
+                <div class="card metrics-card shadow-sm border-0 h-100">
+                    <div class="card-body text-center py-2">
+                        <h3 class="text-warning mb-1 h4 h3-md">18.2</h3>
+                        <p class="text-muted mb-0 small">Hours</p>
+                        <small class="text-warning">
+                            <i class="fas fa-clock me-1"></i>
+                            Delivery time
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg">
+                <div class="card metrics-card shadow-sm border-0 h-100">
+                    <div class="card-body text-center py-2">
+                        <h3 class="text-success mb-1 h4 h3-md">68</h3>
+                        <p class="text-muted mb-0 small">Pallets</p>
+                        <small class="text-success">
+                            <i class="fas fa-boxes me-1"></i>
+                            Delivered
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg">
+                <div class="card metrics-card shadow-sm border-0 h-100">
+                    <div class="card-body text-center py-2">
+                        <h3 class="text-danger mb-1 h4 h3-md">87%</h3>
+                        <p class="text-muted mb-0 small">Efficiency</p>
+                        <small class="text-danger">
+                            <i class="fas fa-chart-line me-1"></i>
+                            Fleet utilization
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Routes Overview -->
+        <div class="card shadow-lg border-0">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-route me-2"></i>
+                    Optimized Route Analysis
+                </h4>
+            </div>
+            <div class="card-body p-2 p-md-3">
+                
+                <!-- Route 1 -->
+                <div class="card route-card efficiency-high mb-3 shadow-sm border-0">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h5 class="mb-0 text-primary">
+                                    <i class="fas fa-truck me-2"></i>
+                                    Route 1: Truck_01
+                                </h5>
+                            </div>
+                            <div class="col-12 col-md-4 text-end mt-2 mt-md-0">
+                                <span class="badge bg-success">88% Efficient</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>🗺️ Route Sequence:</strong>
+                            <p class="text-monospace small mb-3 ms-3">Chicago DC → Walmart Chicago → Target Milwaukee → Kroger Detroit → Return</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="badge bg-primary me-2 mb-1">🚛 23 Pallets</span>
+                                <span class="badge bg-success me-2 mb-1">💰 $2,840</span>
+                                <span class="badge bg-info me-2 mb-1">📏 428 mi</span>
+                                <span class="badge bg-warning mb-1">⏱️ 6.2 hrs</span>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-tachometer-alt me-1 text-muted"></i>
+                                    Avg Speed: 69.0 mph
+                                </small>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-dollar-sign me-1 text-muted"></i>
+                                    Cost per Pallet: $123
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Route 2 -->
+                <div class="card route-card efficiency-medium mb-3 shadow-sm border-0">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h5 class="mb-0 text-primary">
+                                    <i class="fas fa-truck me-2"></i>
+                                    Route 2: Truck_02
+                                </h5>
+                            </div>
+                            <div class="col-12 col-md-4 text-end mt-2 mt-md-0">
+                                <span class="badge bg-warning">73% Efficient</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>🗺️ Route Sequence:</strong>
+                            <p class="text-monospace small mb-3 ms-3">Cincinnati DC → Meijer Cincinnati → Walmart Columbus → Kroger Cleveland → Return</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="badge bg-primary me-2 mb-1">🚛 19 Pallets</span>
+                                <span class="badge bg-success me-2 mb-1">💰 $2,150</span>
+                                <span class="badge bg-info me-2 mb-1">📏 385 mi</span>
+                                <span class="badge bg-warning mb-1">⏱️ 5.8 hrs</span>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-tachometer-alt me-1 text-muted"></i>
+                                    Avg Speed: 66.4 mph
+                                </small>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-dollar-sign me-1 text-muted"></i>
+                                    Cost per Pallet: $113
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Route 3 -->
+                <div class="card route-card efficiency-high mb-3 shadow-sm border-0">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h5 class="mb-0 text-primary">
+                                    <i class="fas fa-truck me-2"></i>
+                                    Route 3: Truck_03
+                                </h5>
+                            </div>
+                            <div class="col-12 col-md-4 text-end mt-2 mt-md-0">
+                                <span class="badge bg-success">96% Efficient</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>🗺️ Route Sequence:</strong>
+                            <p class="text-monospace small mb-3 ms-3">Dallas DC → Costco Dallas → Target Austin → Walmart Houston → Return</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <span class="badge bg-primary me-2 mb-1">🚛 26 Pallets</span>
+                                <span class="badge bg-success me-2 mb-1">💰 $3,460</span>
+                                <span class="badge bg-info me-2 mb-1">📏 434 mi</span>
+                                <span class="badge bg-warning mb-1">⏱️ 6.2 hrs</span>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-tachometer-alt me-1 text-muted"></i>
+                                    Avg Speed: 70.0 mph
+                                </small>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-dollar-sign me-1 text-muted"></i>
+                                    Cost per Pallet: $133
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="row mt-4">
+            <div class="col text-center">
+                <p class="text-muted">
+                    <i class="fas fa-laptop-code me-1"></i>
+                    For the full interactive dashboard with charts, data tables, and all features: 
+                    <code>python3 app.py</code>
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
