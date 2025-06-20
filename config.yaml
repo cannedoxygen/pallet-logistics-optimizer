@@ -1,0 +1,40 @@
+app:
+  name: "Pallet Logistics Optimizer"
+  version: "1.0.0"
+  debug: false
+
+optimization:
+  solver: "CBC"  # Options: CPLEX, GUROBI, GLPK, CBC
+  time_limit_seconds: 3600
+  mip_gap: 0.01
+  threads: -1  # Use all available threads
+
+costs:
+  fuel_cost_per_mile: 0.65
+  driver_cost_per_hour: 25.0
+  warehouse_handling_cost: 15.0
+  default_toll_rate: 0.15
+
+constraints:
+  max_route_distance: 500  # miles
+  max_driver_hours: 10
+  max_pallet_capacity: 26
+  max_weight_capacity: 48000  # pounds
+
+data:
+  input_directory: "data/input"
+  output_directory: "data/output"
+  reference_directory: "data/reference"
+  
+geo:
+  api_key: ""  # Set your geocoding API key
+  default_speed_mph: 55
+  
+reporting:
+  excel_output: true
+  pdf_output: false
+  dashboard_enabled: true
+  
+logging:
+  level: "INFO"
+  file: "logs/optimizer.log"
